@@ -1,0 +1,8 @@
+[package]
+name = "sob"
+version = "0.1.0"
+authors = ["farhan"]
+edition = "2018"
+
+[dependencies]
+vob = "2.0.2"
