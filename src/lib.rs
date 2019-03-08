@@ -1,15 +1,13 @@
-#[macro_use]
 extern crate vob;
 use vob::Vob;
 
-pub struct Sob<T = usize> {
-    vob: Vob<T>,
+pub struct Sob {
+    vob: Vob,
 }
 
-impl Sob<usize> {
+impl Sob {
     /// Creates an empty Sob
     /// # Examples
-    ///
     /// ```
     /// use sob::Sob;
     ///
@@ -18,6 +16,7 @@ impl Sob<usize> {
     pub fn new() -> Sob {
         Sob { vob: Vob::new() }
     }
+    /// Creates a sob with capacity len
     /// ```
     /// use sob::Sob;
     ///
@@ -29,7 +28,7 @@ impl Sob<usize> {
         Sob::from_vob(vob)
     }
 
-    /// Creates a sob with capacity from an existing vob
+    /// Creates a sob from an existing vob
     /// # Examples
     ///
     /// ```
@@ -47,7 +46,9 @@ impl Sob<usize> {
     /// ```
     /// use sob::Sob;
     /// use vob::Vob;
-    /// let v = Vob::new();
+    /// let mut v = Vob::new();
+    /// v.reserve(74);
+    /// println!("capacity {:?}",v.capacity () );
     /// let mut x = Sob::from_vob(v);
     /// assert_eq!(x.capacity(),0);
     /// ```
@@ -59,8 +60,19 @@ impl Sob<usize> {
     /// for the given BitSet to contain len distinct elements.
     /// In the case of BitSet this means reallocations will not
     /// occur as long as all inserted elements are less than len.
+    /// # Examples
+    ///
+    /// ```
+    /// use sob::Sob;
+    /// let mut s = Sob::new();
+    /// println!("{:?}", s.capacity() );
+    /// s.reserve_len(10);
+    /// println!("{:?}", s.capacity() );
+    /// assert_eq!(s.capacity(),10);
+    /// ```
     pub fn reserve_len(&mut self, len: usize) {
         let cur_len = self.vob.len();
+        println!("cur {:?}",cur_len );
         if len >= cur_len {
             self.vob.reserve(len - cur_len);
         }
