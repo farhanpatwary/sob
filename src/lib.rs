@@ -6,7 +6,6 @@ pub struct Sob {
 }
 
 impl Sob {
-
     /// Creates an empty Sob
     /// # Examples
     ///
@@ -75,7 +74,7 @@ impl Sob {
     /// ```
     pub fn reserve_len(&mut self, len: usize) {
         let cur_len = self.vob.len();
-        println!("cur {:?}",cur_len );
+        println!("cur {:?}", cur_len);
         if len >= cur_len {
             self.vob.resize(len - cur_len, false);
         }
@@ -100,7 +99,7 @@ impl Sob {
         self.vob
     }
 
-    pub fn get(self,index: usize) -> Option<bool>{
+    pub fn get(self, index: usize) -> Option<bool> {
         self.vob.get(index)
     }
     /// Returns a reference to the underlying bit vector.
@@ -155,11 +154,10 @@ impl Sob {
     pub fn contains(&self, value: &usize) -> bool {
         if (self.vob.get(*value)).is_none() == true {
             false
-        }
-        else {
+        } else {
             self.vob.get(*value).unwrap()
         }
-     }
+    }
 
     pub fn insert(&mut self, value: usize) -> bool {
         if self.contains(&value) {
@@ -168,7 +166,7 @@ impl Sob {
 
         let len = self.vob.len();
         if value >= len {
-            self.vob.resize(value +1, false)
+            self.vob.resize(value + 1, false)
         }
 
         self.vob.set(value, true);
