@@ -6,8 +6,10 @@ pub struct Sob {
 }
 
 impl Sob {
+
     /// Creates an empty Sob
     /// # Examples
+    ///
     /// ```
     /// use sob::Sob;
     ///
@@ -16,6 +18,7 @@ impl Sob {
     pub fn new() -> Sob {
         Sob { vob: Vob::new() }
     }
+
     /// Creates a sob with capacity len
     /// ```
     /// use sob::Sob;
@@ -74,24 +77,72 @@ impl Sob {
         let cur_len = self.vob.len();
         println!("cur {:?}",cur_len );
         if len >= cur_len {
-            self.vob.reserve(len - cur_len);
+            self.vob.resize(len - cur_len, false);
         }
     }
 
+    /// Consumes this set to return the underlying bit vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sob::Sob;
+    ///
+    /// let mut s = Sob::new();
+    /// s.insert(0);
+    /// s.insert(3);
+    ///
+    /// let bv = s.into_vob();
+    /// assert!(bv[0]);
+    /// assert!(bv[3]);
+    /// ```
     pub fn into_vob(self) -> Vob {
         self.vob
     }
 
+    pub fn get(self,index: usize) -> Option<bool>{
+        self.vob.get(index)
+    }
+    /// Returns a reference to the underlying bit vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sob::Sob;
+    ///
+    /// let mut s = Sob::new();
+    /// s.insert(0);
+    ///
+    /// let bv = s.get_ref();
+    /// assert_eq!(bv[0], true);
+    /// ```
     pub fn get_ref(&self) -> &Vob {
         &self.vob
     }
-
+    /// Truncates the underlying vector to the least length required.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use sob::Sob;
+    ///
+    /// let mut s = Sob::new();
+    /// s.insert(32183231);
+    /// s.remove(&32183231);
+    ///
+    /// // Internal storage will probably be bigger than necessary
+    /// println!("old capacity: {}", s.capacity());
+    ///
+    /// // Now should be smaller
+    /// s.shrink_to_fit();
+    /// println!("new capacity: {}", s.capacity());
+    /// ```
     pub fn shrink_to_fit(&mut self) {
         self.vob.shrink_to_fit()
     }
 
     pub fn len(&self) -> usize {
-        self.vob.iter_set_bits(..).count()
+        self.vob.len()
     }
     pub fn is_empty(&self) -> bool {
         self.vob.is_empty()
@@ -102,8 +153,13 @@ impl Sob {
     }
 
     pub fn contains(&self, value: &usize) -> bool {
-        self.vob.get(*value).unwrap()
-    }
+        if (self.vob.get(*value)).is_none() == true {
+            false
+        }
+        else {
+            self.vob.get(*value).unwrap()
+        }
+     }
 
     pub fn insert(&mut self, value: usize) -> bool {
         if self.contains(&value) {
@@ -112,7 +168,7 @@ impl Sob {
 
         let len = self.vob.len();
         if value >= len {
-            self.vob.resize(value - len + 1, false)
+            self.vob.resize(value +1, false)
         }
 
         self.vob.set(value, true);
