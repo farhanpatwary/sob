@@ -43,6 +43,11 @@ impl Sob {
         Sob { vob: x }
     }
 
+    /// Creates a Sob from a u8 slice or byte array
+    pub fn from_bytes(x:&[u8]) -> Sob {
+        Sob { vob : Vob::from_bytes(x)}
+    }
+    
     /// Returns the capacity in bits for the sob
     /// # Examples
     /// ```
