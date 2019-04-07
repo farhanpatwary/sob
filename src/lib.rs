@@ -49,8 +49,6 @@ impl Sob {
     /// use sob::Sob;
     /// use vob::Vob;
     /// let mut v = Vob::new();
-    /// v.reserve(74);
-    /// println!("capacity {:?}",v.capacity () );
     /// let mut x = Sob::from_vob(v);
     /// assert_eq!(x.capacity(),0);
     /// ```
@@ -60,7 +58,7 @@ impl Sob {
 
     /// Reserves the minimum capacity
     /// for the given sob to contain len distinct elements.
-    /// # Examples
+    /// # Example 1 - reserve_len on empty Sob
     ///
     /// ```
     /// use sob::Sob;
@@ -70,10 +68,34 @@ impl Sob {
     /// println!("{:?}", s.capacity() );
     /// assert_eq!(s.capacity(),10);
     /// ```
+    ///
+    /// Example 2 - reserve_len on Sob with elements in it
+    ///
+    /// ```
+    /// use sob::Sob;
+    /// let mut s = Sob::new();
+    /// println!("{:?}", s.capacity() );
+    /// s.insert(0);
+    /// s.reserve_len(10);
+    /// println!("{:?}", s.capacity() );
+    /// assert_eq!(s.capacity(),11);
+    /// ```
+    ///
+    /// Example 3 - reserve_len where cur_len > len
+    ///
+    /// ```
+    /// use sob::Sob;
+    /// let mut s = Sob::new();
+    /// println!("{:?}", s.capacity() );
+    /// s.reserve_len(10);
+    /// assert_eq!(s.capacity(),10);
+    /// s.reserve_len(9);
+    /// assert_eq!(s.capacity(),10)
+    /// ```
     pub fn reserve_len(&mut self, len: usize) {
         let cur_len = self.vob.len();
         if len >= cur_len {
-            self.vob.resize(len - cur_len, false);
+            self.vob.resize(len+cur_len, false);
         }
     }
 
@@ -88,9 +110,9 @@ impl Sob {
     /// s.insert(0);
     /// s.insert(3);
     ///
-    /// let bv = s.into_vob();
-    /// assert!(bv[0]);
-    /// assert!(bv[3]);
+    /// let x = s.into_vob();
+    /// assert!(x[0]);
+    /// assert!(x[3]);
     /// ```
     pub fn into_vob(self) -> Vob {
         self.vob
@@ -109,8 +131,8 @@ impl Sob {
     /// let mut s = Sob::new();
     /// s.insert(10);
     ///
-    /// let bv = s.get_ref();
-    /// assert_eq!(bv[10], true);
+    /// let x = s.get_ref();
+    /// assert_eq!(x[10], true);
     /// ```
     pub fn get_ref(&self) -> &Vob {
         &self.vob
@@ -135,13 +157,23 @@ impl Sob {
     }
     /// Returns whether the Sob is empty or not.
     /// True if the Sob is empty, false if it isn't empty.
-    /// # Examples
+    /// # Example 1 - Sob is empty
     ///
     /// ```
     /// use sob::Sob;
     ///
     /// let mut s = Sob::new();
     /// assert_eq!(s.is_empty(),true);
+    /// ```
+    ///
+    /// # Example 2 - Sob is not empty
+    ///
+    /// ```
+    /// use sob::Sob;
+    ///
+    /// let mut s = Sob::new();
+    /// s.insert(1);
+    /// assert_eq!(s.is_empty(),false);
     /// ```
     pub fn is_empty(&self) -> bool {
         if self.vob.iter_set_bits(..).count() == 0 {
@@ -178,6 +210,7 @@ impl Sob {
     /// let mut s = Sob::new();
     /// s.insert(10);
     /// assert_eq!(s.contains(&10),true);
+    /// assert_eq!(s.contains(&1),false);
     /// ```
     pub fn contains(&self, value: &usize) -> bool {
         if (self.vob.get(*value)).is_none() == true {
